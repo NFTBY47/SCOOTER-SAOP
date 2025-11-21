@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ScooterRentalService"
+             targetNamespace="http://scooter-rental.ru/wsdl"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://scooter-rental.ru/wsdl"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:rent="http://scooter-rental.ru/schema">
+
+    <!-- 1. Типы данных (XML Schema) -->
+    <types>
+        <xsd:schema targetNamespace="http://scooter-rental.ru/schema"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+            <!-- Основной тип "Гироскутер" -->
+            <xsd:complexType name="Scooter">
+                <xsd:sequence>
+                    <xsd:element name="id" type="xsd:integer" minOccurs="0"/>
+                    <xsd:element name="model" type="xsd:string"/>
+                    <xsd:element name="serialNumber" type="xsd:string"/>
+                    <xsd:element name="status" type="xsd:string"/>
+                    <xsd:element name="stationId" type="xsd:integer"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для запроса на добавление -->
+            <xsd:complexType name="AddScooterRequest">
+                <xsd:sequence>
+                    <xsd:element name="scooter" type="rent:Scooter"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для ответа на добавление -->
+            <xsd:complexType name="AddScooterResponse">
+                <xsd:sequence>
+                    <xsd:element name="status" type="xsd:string"/>
+                    <xsd:element name="internalScooterId" type="xsd:integer"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для запроса на поиск -->
+            <xsd:complexType name="GetScooterRequest">
+                <xsd:sequence>
+                    <xsd:element name="model" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+                    <xsd:element name="stationId" type="xsd:integer" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для ответа с найденными гироскутерами -->
+            <xsd:complexType name="GetScooterResponse">
+                <xsd:sequence>
+                    <xsd:element name="scooters" type="rent:Scooter" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element name="foundCount" type="xsd:integer"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для обновления статуса -->
+            <xsd:complexType name="UpdateScooterStatusRequest">
+                <xsd:sequence>
+                    <xsd:element name="scooterId" type="xsd:integer"/>
+                    <xsd:element name="newStatus" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="UpdateScooterStatusResponse">
+                <xsd:sequence>
+                    <xsd:element name="status" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для удаления -->
+            <xsd:complexType name="DeleteScooterRequest">
+                <xsd:sequence>
+                    <xsd:element name="scooterId" type="xsd:integer"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <xsd:complexType name="DeleteScooterResponse">
+                <xsd:sequence>
+                    <xsd:element name="status" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Тип для ошибки -->
+            <xsd:complexType name="ScooterFault">
+                <xsd:sequence>
+                    <xsd:element name="errorCode" type="xsd:string"/>
+                    <xsd:element name="errorMessage" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:complexType>
+
+            <!-- Элементы для операций -->
+            <xsd:element name="AddScooterRequest" type="rent:AddScooterRequest"/>
+            <xsd:element name="AddScooterResponse" type="rent:AddScooterResponse"/>
+            <xsd:element name="GetScooterRequest" type="rent:GetScooterRequest"/>
+            <xsd:element name="GetScooterResponse" type="rent:GetScooterResponse"/>
+            <xsd:element name="UpdateScooterStatusRequest" type="rent:UpdateScooterStatusRequest"/>
+            <xsd:element name="UpdateScooterStatusResponse" type="rent:UpdateScooterStatusResponse"/>
+            <xsd:element name="DeleteScooterRequest" type="rent:DeleteScooterRequest"/>
+            <xsd:element name="DeleteScooterResponse" type="rent:DeleteScooterResponse"/>
+            <xsd:element name="ScooterFault" type="rent:ScooterFault"/>
+
+        </xsd:schema>
+    </types>
+
+    <!-- 2. Сообщения -->
+    <message name="AddScooterInput">
+        <part name="parameters" element="rent:AddScooterRequest"/>
+    </message>
+    <message name="AddScooterOutput">
+        <part name="parameters" element="rent:AddScooterResponse"/>
+    </message>
+    <message name="GetScooterInput">
+        <part name="parameters" element="rent:GetScooterRequest"/>
+    </message>
+    <message name="GetScooterOutput">
+        <part name="parameters" element="rent:GetScooterResponse"/>
+    </message>
+    <message name="UpdateScooterStatusInput">
+        <part name="parameters" element="rent:UpdateScooterStatusRequest"/>
+    </message>
+    <message name="UpdateScooterStatusOutput">
+        <part name="parameters" element="rent:UpdateScooterStatusResponse"/>
+    </message>
+    <message name="DeleteScooterInput">
+        <part name="parameters" element="rent:DeleteScooterRequest"/>
+    </message>
+    <message name="DeleteScooterOutput">
+        <part name="parameters" element="rent:DeleteScooterResponse"/>
+    </message>
+    <message name="ScooterFaultMessage">
+        <part name="fault" element="rent:ScooterFault"/>
+    </message>
+
+    <!-- 3. Порт-тип -->
+    <portType name="ScooterRentalPortType">
+        <operation name="addScooter">
+            <input message="tns:AddScooterInput"/>
+            <output message="tns:AddScooterOutput"/>
+            <fault name="ScooterFault" message="tns:ScooterFaultMessage"/>
+        </operation>
+        <operation name="getScooter">
+            <input message="tns:GetScooterInput"/>
+            <output message="tns:GetScooterOutput"/>
+            <fault name="ScooterFault" message="tns:ScooterFaultMessage"/>
+        </operation>
+        <operation name="updateScooterStatus">
+            <input message="tns:UpdateScooterStatusInput"/>
+            <output message="tns:UpdateScooterStatusOutput"/>
+            <fault name="ScooterFault" message="tns:ScooterFaultMessage"/>
+        </operation>
+        <operation name="deleteScooter">
+            <input message="tns:DeleteScooterInput"/>
+            <output message="tns:DeleteScooterOutput"/>
+            <fault name="ScooterFault" message="tns:ScooterFaultMessage"/>
+        </operation>
+    </portType>
+
+    <!-- 4. Привязки -->
+    <binding name="ScooterRentalSoapBinding" type="tns:ScooterRentalPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="addScooter">
+            <soap:operation soapAction="http://scooter-rental.ru/addScooter"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="ScooterFault">
+                <soap:fault name="ScooterFault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="getScooter">
+            <soap:operation soapAction="http://scooter-rental.ru/getScooter"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="ScooterFault">
+                <soap:fault name="ScooterFault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="updateScooterStatus">
+            <soap:operation soapAction="http://scooter-rental.ru/updateScooterStatus"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="ScooterFault">
+                <soap:fault name="ScooterFault" use="literal"/>
+            </fault>
+        </operation>
+        <operation name="deleteScooter">
+            <soap:operation soapAction="http://scooter-rental.ru/deleteScooter"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="ScooterFault">
+                <soap:fault name="ScooterFault" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+
+    <!-- 5. Служба -->
+    <service name="ScooterRentalService">
+        <documentation>SOAP-сервис для управления парком гироскутеров</documentation>
+        <port name="ScooterRentalPort" binding="tns:ScooterRentalSoapBinding">
+            <soap:address location="http://scooter-rental-central.ru/soap/api"/>
+        </port>
+    </service>
+
+</definitions>  
